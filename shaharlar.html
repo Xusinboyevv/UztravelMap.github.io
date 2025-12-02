@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UzTravelMap - Shaharlar Katalogi</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Asosiy va Ikkilamchi Ranglar */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f7f9fb; /* Yengil fon */
+        } 
+        /* Deep Teal ranglar sxemasi (Asosiy rang: #0f766e - Teal-700) */
+        .primary-color { color: #0f766e; } 
+        .bg-primary { background-color: #0f766e; }
+        .accent-color { background-color: #fbbf24; } /* Amber-400 - Aksent rangi */
+
+        /* Navigatsiya Stili */
+        .nav-link { transition: color 0.3s, background-color 0.3s; padding: 0.5rem 0.75rem; border-radius: 8px; }
+        .nav-link:hover { background-color: #e0f2f1; color: #0f766e; }
+        .active-link { font-weight: 700; color: #0f766e; }
+
+        /* Hero Qismi uchun fon (Samarqand rasmi) */
+        .hero-section {
+            background-image: url('https://avatars.mds.yandex.net/i?id=bb7b90a6037af81f53887d61f6f9ccf1_l-7570978-images-thumbs&ref=rim&n=13&w=1200&h=800'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        /* Aksent Tugma Stili */
+        .btn-accent {
+            background-color: #fbbf24; 
+            color: #1f2937;
+            font-weight: 800;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.5);
+        }
+        .btn-accent:hover {
+            background-color: #f59e0b;
+            box-shadow: 0 8px 15px rgba(245, 158, 11, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* Shahar Kartalari Stili */
+        .city-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(15, 118, 110, 0.1);
+        }
+        
+        /* Bildirishnoma (Modal) Stili - JSda boshqariladi */
+        .modal-container {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white shadow-lg rounded-b-xl px-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center py-4">
+            <h1 class="text-3xl font-extrabold primary-color">UzTravelMap</h1>
+            
+            <div class="space-x-4 hidden md:flex">
+                <a href="bosh_sahifa.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-house-chimney mr-1"></i> Bosh sahifa</a>
+                <a href="shaharlar.html" class="nav-link active-link flex items-center"><i class="fas fa-landmark mr-1"></i> Shaharlar</a>
+                <a href="mehmonxonalar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-bed mr-1"></i> Mehmonxonalar</a>
+                <a href="xaritalar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-globe-asia mr-1"></i> Xaritalar</a>
+                <a href="bron_qilish.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-ticket-alt mr-1"></i> Bron qilish</a>
+                <a href="aloqa.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-message mr-1"></i> Aloqa</a>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-primary-color text-2xl" aria-label="Mobil menyu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden">
+            <div class="flex flex-col space-y-2 py-3">
+                <a href="bosh_sahifa.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-house-chimney mr-2"></i> Bosh sahifa</a>
+                <a href="shaharlar.html" class="nav-link active-link py-2 px-3"><i class="fas fa-landmark mr-2"></i> Shaharlar</a>
+                <a href="mehmonxonalar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-bed mr-2"></i> Mehmonxonalar</a>
+                <a href="xaritalar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-globe-asia mr-2"></i> Xaritalar</a>
+                <a href="bron_qilish.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-ticket-alt mr-2"></i> Bron qilish</a>
+                <a href="aloqa.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-message mr-2"></i> Aloqa</a>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="min-h-screen">
+        
+        <section class="hero-section text-white py-20 sm:py-32 relative flex items-center justify-center">
+            <div class="absolute inset-0 bg-primary opacity-60"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 relative z-10 text-center py-10">
+                <h2 class="text-5xl md:text-6xl font-black mb-4">O'zbekiston Bo'ylab Sayohat</h2>
+        
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24 max-w-7xl mx-auto px-4">
+            <h3 class="text-4xl font-extrabold text-gray-800 text-center mb-4">O'zbekistonning asosiy marvarid shaharlari</h3>
+            <p class="text-xl text-gray-500 text-center mb-8">Har bir shahar - bu alohida tarix va madaniyat dunyosi.</p>
+            
+            <div class="text-center mb-12">
+                <a href="xaritalar.html" 
+                    class="inline-block py-3 px-8 text-lg font-bold btn-accent rounded-lg hover:shadow-xl transition duration-300">
+                    <i class="fas fa-map-marked-alt mr-2"></i> Barcha Shaharlar Xaritasi
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://www.notasdeunviajero.com/wp-content/uploads/2020/08/vistas-complejo-kalon-bujara-uzbekistan.jpg" alt="Samarqand, Registon" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-mosque mr-2 text-amber-500 text-lg"></i> Samarqand
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Amir Temur davrining poytaxti bo'lib, me'moriy buyuklik timsoli. Registon, Shohi Zinda va Ulug'bek rasadxonasi kabi obidalar mavjud.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Samarqand')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://idsb.tmgrup.com.tr/ly/uploads/images/2021/10/25/thumbs/800x531/154544.jpg?v=1635170899" alt="Buxoro, Labi Hovuz" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-book-open mr-2 text-amber-500 text-lg"></i> Buxoro
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Markaziy Osiyodagi eng qadimiy doimiy yashash joylaridan biri. Labirintga o'xshash tor ko'chalari bilan mashhur.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Buxoro')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=7c2f9eb3a7606e212c331b1b13c8392d_l-5208330-images-thumbs&n=13" alt="Xiva, Ichan Qal'a" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-fort-awesome-alt mr-2 text-amber-500 text-lg"></i> Xiva
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Butun shahar YUNESKOning himoyasidagi yagona, ulkan ochiq osmon ostidagi muzeydir. Ichan Qal'aning tuproq devorlari bilan mashhur.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Xiva')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.dzeninfra.ru/get-zen_doc/5151063/pub_623c786f19453037a10e4301_6241969b939cc4084f30f378/scale_1200" alt="Toshkent, Zamonaviy Markaz" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-city mr-2 text-amber-500 text-lg"></i> Toshkent
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            O'zbekistonning poytaxti va zamonaviy markazi. Bu yerda qadimiy Chorsu bozori yonida baland binolar qad rostlagan.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Toshkent')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://sun9-19.userapi.com/impg/3ZzBN8GiJqe49tQJdZElwsjXTMJgDTjZnaePNQ/WFjCfmCwxYQ.jpg?size=1280x853&quality=96&sign=6712ebdddfdceb9ee8c049834fb50850&c_uniq_tag=ddl9OTNHjAfYlWw-GafL0WIu2CxJLKTtCwDl4h3rSEw&type=album" alt="Qarshi" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-archway mr-2 text-amber-500 text-lg"></i> Qarshi
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Qashqadaryo viloyatining markazi. Madaniy markazlardan biri, tarixiy ko'prik va madrasalarga ega.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Qarshi')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://storage.kun.uz/source/11/eGs5H9vZuNgrVIXBOy_qFbv_QcH2bcGk.jpg" alt="Namangan" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-seedling mr-2 text-amber-500 text-lg"></i> Namangan
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Gullar shahri sifatida tanilgan. Farg'ona vodiysining yirik madaniy va sanoat markazi.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Namangan')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://yep.uz/wp-content/uploads/2021/05/Andizhan-800x538.jpg" alt="Andijon" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-mountain-sun mr-2 text-amber-500 text-lg"></i> Andijon
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Zahiriddin Muhammad Bobur vatani. Qadimiy tarixga ega bo'lib, o'zining mehnatsevar xalqi bilan mashhur.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Andijon')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=14bbb5bf49a53b8d1558e2bcfdc1f87a_l-6696526-images-thumbs&n=13" alt="Farg'ona" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-palette mr-2 text-amber-500 text-lg"></i> Farg'ona
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Farg'ona vodiysining go'zal va obod shaharlaridan biri. Zamonaviy me'morchilik va yashil bog'larga ega.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Farg\'ona')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://static.tengrinews.kz/userdata/news/2021/news_440620/thumb_m/photo_365006.jpeg" alt="Nukus" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-desert mr-2 text-amber-500 text-lg"></i> Nukus
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Qoraqalpog'iston Respublikasining poytaxti. Igor Savitskiy nomidagi san'at muzeyi bilan mashhur.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Nukus')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=f25ed5d933bccb26650cb1e884d9693c_l-4149382-images-thumbs&n=13" alt="Termiz" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-buddhist mr-2 text-amber-500 text-lg"></i> Termiz
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Amudaryo bo'yida joylashgan qadimiy shahar. Budda madaniyati obidalari va Al-Termiziy maqbarasiga ega.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Termiz')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://fergana.media/siteapi/media/images/3bb593cd-9b46-41f1-b4d2-742a04e7222c.jpeg" alt="Urganch" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-plane-departure mr-2 text-amber-500 text-lg"></i> Urganch
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Xorazm viloyatining ma'muriy markazi. Xivaga kirish eshigi hisoblanadi (Xiva bilan yaqin joylashgan).
+                        </p>
+                        <a href="#" onclick="showCityDetails('Urganch')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://sc04.alicdn.com/kf/H3ded4691f0e84539a24e8f89dc477f89U/249060446/H3ded4691f0e84539a24e8f89dc477f89U.png" alt="Jizzax" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-wind mr-2 text-amber-500 text-lg"></i> Jizzax
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Mirza cho'li yaqinida joylashgan shahar. Savdo va logistika markazi sifatida rivojlanmoqda.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Jizzax')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=3db14589248f685cc361cf43e722be665b834029-5235832-images-thumbs&n=13" alt="Guliston" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-tint mr-2 text-amber-500 text-lg"></i> Guliston
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Sirdaryo viloyatining markazi. Paxtachilik va qishloq xo'jaligi hududi.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Guliston')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=9ef051cef4d4a019320887355c8d231f_l-5233561-images-thumbs&n=13" alt="Navoiy" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-flask mr-2 text-amber-500 text-lg"></i> Navoiy
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Sanoat markazi. Cho'l zonasida joylashgan bo'lib, o'zining oltin konlari bilan mashhur.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Navoiy')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=4461cc3dee4c8569369f55cda945f19196260023-9148863-images-thumbs&ref=rim&n=33&w=299&h=200" alt="Qumqo'rg'on" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-truck-moving mr-2 text-amber-500 text-lg"></i> Qumqo'rg'on
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Surxondaryo viloyatidagi shahar. Mintaqaviy transport markazi.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Qumqo\'rg\'on')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://cdn.tripster.ru/thumbs2/91ebec90-fb92-11ed-9326-5e0f78c97244.1200x1000.jpeg" alt="Denov" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-leaf mr-2 text-amber-500 text-lg"></i> Denov
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Surxondaryo viloyatining yirik shahri. Qishloq xo'jaligi va savdo-sotiq rivojlangan.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Denov')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/get-altay/11374564/2a00000192fab98f21e6f3d6318cd123170f/XXL_height" alt="Shahrisabz" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-crown mr-2 text-amber-500 text-lg"></i> Shahrisabz
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Amir Temurning tug'ilgan shahri. Oqsaroy qoldiqlari va Dorut-Tilovat majmuasi bilan mashhur.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Shahrisabz')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/i?id=99de82d32550a661b87227860c9958b6_l-5260040-images-thumbs&n=13" alt="Marg'ilon" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-trowel-bricks mr-2 text-amber-500 text-lg"></i> Marg'ilon
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Ipak markazi. Xon Atlas va adras kabi matolarni ishlab chiqarish an'analari bilan dunyoga tanilgan.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Marg\'ilon')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://i.pinimg.com/736x/6d/02/5c/6d025c6975a9c338f0d8029dbe1cadf4.jpg" alt="Qo'qon" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-gavel mr-2 text-amber-500 text-lg"></i> Qo'qon
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Qo'qon xonligining poytaxti. Xudoyorxon O'rdasi va Jome masjidi bilan diqqatga sazovor.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Qo\'qon')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white city-card shadow-lg">
+                    <img src="https://avatars.mds.yandex.net/get-altay/5235198/2a0000017b1b06ad9e6d9c3761deb8a8eab7/orig" alt="Zarafshon" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-5">
+                        <h4 class="text-2xl font-bold primary-color mb-2 flex items-center">
+                            <i class="fas fa-diamond mr-2 text-amber-500 text-lg"></i> Zarafshon
+                        </h4>
+                        <p class="text-gray-600 mb-3 text-sm line-clamp-3">
+                            Oltin konlari yaqinida qurilgan "oltin poytaxt". Navoiy viloyatidagi zamonaviy shahar.
+                        </p>
+                        <a href="#" onclick="showCityDetails('Zarafshon')" class="w-full py-2 btn-accent rounded-lg text-md font-semibold hover:shadow-lg transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil
+                        </a>
+                    </div>
+                </div>
+                </div>
+        </section>
+
+        <section class="bg-primary py-16 mt-10">
+            <div class="max-w-4xl mx-auto px-4 text-center text-white">
+                <h3 class="text-4xl font-extrabold mb-4">O'z Sayohatlaringizni Bugun Rejalashtiring!</h3>
+                <p class="text-xl font-light mb-8">Bizning ekspertlarimiz bilan O'zbekiston bo'ylab eng yaxshi marshrutlarni tuzing.</p>
+                <a href="xaritalar.html" class="inline-block py-4 px-10 btn-accent rounded-xl text-lg hover:shadow-xl transition duration-300">
+                    <i class="fas fa-paper-plane mr-2"></i> Sayohatni Boshlash
+                </a>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            <div>
+                <h4 class="text-xl font-bold mb-4 text-amber-400">UzTravelMap</h4>
+                <p class="text-gray-400 text-sm">O'zbekistonda unutilmas sayohatlar yaratishga qaratilgan birinchi raqamli platforma.</p>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Tezkor Havolalar</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="shaharlar.html" class="text-gray-400 hover:text-primary-color transition">Shaharlar</a></li>
+                    <li><a href="mehmoxonalar.html" class="text-gray-400 hover:text-primary-color transition">Mehmonxonalar</a></li>
+                    <li><a href="xaritalar.html" class="text-gray-400 hover:text-primary-color transition">Xaritalar</a></li>
+                    <li><a href="bron_qilish.html" class="text-gray-400 hover:text-primary-color transition">Bron qilish</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-primary-color transition">FAQ</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Aloqa</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center"><i class="fas fa-phone mr-2 text-primary-color"></i> <span class="font-mono">+998 91 093 43 63</span></li>
+                    <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-primary-color"></i> Xorazm viloyati, Xiva tumani.</li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-primary-color"></i> info@uztravelmap.uz</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Ijtimoiy Tarmoqlar</h4>
+                <div class="flex space-x-6 text-3xl">
+                    <a href="https://instagram.com/Xusinboyevv" target="_blank" aria-label="Instagram"
+                        class="transition duration-300 hover:scale-110" style="color: #E1306C;">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    
+                    <a href="https://t.me/Xusinboyevv" target="_blank" aria-label="Telegram"
+                        class="text-blue-400 transition duration-300 hover:scale-110 hover:text-blue-300">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    
+                    <a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="text-gray-400 text-xs mt-3">@Xusinboyevv</p>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
+            &copy; 2024 UzTravelMap. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+    <div id="city-details-modal" class="modal-container fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-[100] invisible opacity-0">
+        <div class="modal-content bg-white p-8 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto transform scale-90 opacity-0 relative">
+            <button onclick="closeCityDetails()" class="absolute top-4 right-4 text-gray-500 hover:text-red-600 transition text-2xl" aria-label="Yopish">
+                <i class="fas fa-times-circle"></i>
+            </button>
+            <h4 id="modal-city-name" class="text-3xl font-bold primary-color mb-4 border-b pb-2">Shahar Nomi</h4>
+            <p id="modal-city-description" class="text-gray-700 leading-relaxed"></p>
+        </div>
+    </div>
+    <script>
+        // --- Shaharlar Ma'lumotlar Bazasi (Detallarni chiqarish uchun) ---
+        const cityData = {
+            "Samarqand": {
+                description: "Samarqand - Buyuk Ipak Yo'lining markazida joylashgan. Uning me'moriy durdonalari, xususan, Registon maydoni, Shohi Zinda majmuasi va Ulug'bek rasadxonasi dunyo bo'ylab sayyohlarni o'ziga jalb qiladi. Amir Temur davrida Movarounnahrning poytaxti bo'lgan va ilm-fan markazi sifatida shuhrat qozongan. Shaharda madaniyat va tarixning har bir qadami seziladi.",
+                icon: "fa-mosque"
+            },
+            "Buxoro": {
+                description: "Muqaddas Buxoro - islom sivilizatsiyasining eng qadimiy markazlaridan biri. Uning 140 ga yaqin me'moriy yodgorliklari YUNESKO himoyasida. Kalon minorasi, Labi Hovuz majmuasi, Somoniylar maqbarasi kabi obidalar shahar tarixining yorqin guvohidir. Buxoro doimiy yashash joyi bo'lgan eng qadimiy shaharlardan biridir.",
+                icon: "fa-book-open"
+            },
+            "Xiva": {
+                description: "Xiva - Markaziy Osiyoda saqlanib qolgan eng yaxshi devor bilan o'ralgan qadimiy shahar. Uning ichki qismi - Ichan Qal'a - ochiq osmon ostidagi yirik muzeydir. Shaharning tor ko'chalari, baland minoralari (masalan, Kalta Minor), madrasa va masjidlari o'rta asr sharqona muhitini aks ettiradi. U Qadimgi Xorazmning merosxo'ri hisoblanadi.",
+                icon: "fa-fort-awesome-alt"
+            },
+            "Toshkent": {
+                description: "Toshkent - O'zbekistonning poytaxti va eng yirik shahri. Bu shahar qadimiy tarix va zamonaviy taraqqiyotning uyg'unligini namoyish etadi. Kichik qadimiy tor ko'chalar yonida ulkan biznes markazlar, zamonaviy parklar va metropoliten mavjud. Chorsu bozori va Hazrati Imom majmuasi qadimiy qism, O'zbekiston Milliy bog'i esa zamonaviylik ramzidir.",
+                icon: "fa-city"
+            },
+            "Qarshi": {
+                description: "Qarshi - Qashqadaryo viloyatining ma'muriy markazi. Ushbu shahar qadimiy savdo yo'llari kesishmasida joylashgan bo'lib, o'zining tarixiy Temir darvoza va qadimiy ko'prik kabi obidalari bilan mashhur. U mintaqaning iqtisodiy va madaniy rivojlanishida muhim rol o'ynaydi.",
+                icon: "fa-archway"
+            },
+            "Namangan": {
+                description: "Namangan - Farg'ona vodiysining eng yirik shaharlaridan biri, 'Gullar shahri' deb nomlanadi. Shahar gullar festivali bilan mashhur. U qishloq xo'jaligi va to'qimachilik sanoati rivojlangan markaz. Qadimiy tarixiy binolar va zamonaviy infratuzilma Namanganning o'ziga xosligini belgilaydi.",
+                icon: "fa-seedling"
+            },
+            "Andijon": {
+                description: "Andijon - buyuk bobokalonimiz Zahiriddin Muhammad Boburning vatani. Farg'ona vodiysining muhim madaniy va sanoat markazi. Andijon qadimiy shaharlaridan biri bo'lib, o'zining mehnatsevar va mehmondo'st xalqi, shuningdek, 'Bobur maydoni' kabi diqqatga sazovor joylari bilan mashhur.",
+                icon: "fa-mountain-sun"
+            },
+            "Farg'ona": {
+                description: "Farg'ona - vodiydagi eng yashil va obod shaharlardan biri. U 19-asrda mustahkam rus qal'asi sifatida tashkil etilgan. Shahar o'zining yashil parklari, keng ko'chalari va zamonaviy me'morchilik namunalari bilan ajralib turadi. U vodiydagi madaniy va sport markazlaridan biridir.",
+                icon: "fa-palette"
+            },
+            "Nukus": {
+                description: "Nukus - Qoraqalpog'iston Respublikasining poytaxti. Shahar o'zining **Igor Savitskiy nomidagi San'at muzeyi** bilan butun dunyoga tanilgan. Ushbu noyob muzey Sovet davridagi avangard san'atining ikkinchi eng yirik kolleksiyasini saqlaydi. Nukus Orol dengizi fojiasiga yaqinligi tufayli ekologik turizm nuqtasi ham hisoblanadi.",
+                icon: "fa-desert"
+            },
+            "Termiz": {
+                description: "Termiz - O'zbekistonning eng janubiy shahri, Amudaryo bo'yida joylashgan. Shahar qadimiy Budda madaniyati obidalari (masalan, Fayoztepa va Qoratepa) va buyuk alloma Al-Termiziyning maqbarasi bilan mashhur. Bu joy tarixda Buyuk Ipak Yo'lining Buddizm va Islom sivilizatsiyalari kesishgan nuqtasi bo'lgan.",
+                icon: "fa-buddhist"
+            },
+            "Urganch": {
+                description: "Urganch - Xorazm viloyatining ma'muriy markazi. Zamonaviy shahar bo'lishiga qaramay, u qadimiy Xorazm madaniyatini o'zida mujassam etgan. Urganch Xivaga sayyohlik 'darvozasi' bo'lib xizmat qiladi, chunki Xiva 35 km uzoqlikda joylashgan.",
+                icon: "fa-plane-departure"
+            },
+            "Jizzax": {
+                description: "Jizzax - Samarqand va Toshkent o'rtasidagi muhim tranzit nuqtasi. Qadimiy So'g'diyona hududida joylashgan. Hozirda mintaqaviy savdo va logistika markazi sifatida rivojlanmoqda. Shuningdek, shaharga yaqin joylashgan Nurata tog'lari turizm uchun salohiyatga ega.",
+                icon: "fa-wind"
+            },
+            "Guliston": {
+                description: "Guliston - Sirdaryo viloyatining markazi. Asosan qishloq xo'jaligi (paxtachilik, g'allachilik) rivojlangan hudud markazi. Yangi qurilish va obodonlashtirish ishlari bilan zamonaviy qiyofa kasb etmoqda. Shuningdek, Sirdaryo suv resurslariga yaqinligi bilan ajralib turadi.",
+                icon: "fa-tint"
+            },
+            "Navoiy": {
+                description: "Navoiy - O'zbekistonning yirik sanoat va iqtisodiy markazlaridan biri, 'Oltin poytaxt' deb ataladi. Shahar cho'l zonasida joylashgan. Bu yerda yirik kon-metallurgiya sanoati rivojlangan. Shahar buyuk shoir Alisher Navoiy sharafiga nomlangan.",
+                icon: "fa-flask"
+            },
+            "Qumqo'rg'on": {
+                description: "Qumqo'rg'on - Surxondaryo viloyatidagi muhim aholi punkti. Mintaqaviy transport va logistika markazi bo'lib, Janubiy O'zbekistonning iqtisodiy aloqalarida muhim rol o'ynaydi. Asosan qishloq xo'jaligi mahsulotlarini qayta ishlashga ixtisoslashgan.",
+                icon: "fa-truck-moving"
+            },
+            "Denov": {
+                description: "Denov - Surxondaryo viloyatining yirik shahri. Aholisi zich va qishloq xo'jaligi (uzumchilik, subtropik mevalar) rivojlangan tuman markazi. Savdo-sotiq an'analari bilan ajralib turadi va qo'shni mamlakatlar bilan chegaraga yaqin joylashgan.",
+                icon: "fa-leaf"
+            },
+            "Shahrisabz": {
+                description: "Shahrisabz - buyuk sarkarda Amir Temurning tug'ilgan shahri. Uning Oqsaroy saroyining ulkan qoldiqlari, Dorut-Tilovat va Dorus-Saodat majmualari Temuriylar davrining ulug'vorligidan darak beradi. Shaharning tarixiy markazi YUNESKO Jahon merosi ro'yxatiga kiritilgan.",
+                icon: "fa-crown"
+            },
+            "Marg'ilon": {
+                description: "Marg'ilon - O'zbekistonning qadimiy va mashhur ipak markazi. Bu yerda Ipak Yo'lining an'analari saqlanib qolgan va hanuzgacha qo'lda 'Xon Atlas' va 'Adras' kabi matolar ishlab chiqariladi. Marg'ilon shahri Farg'ona vodiysining eng muhim madaniy va savdo nuqtalaridan biridir.",
+                icon: "fa-trowel-bricks"
+            },
+            "Qo'qon": {
+                description: "Qo'qon - Farg'ona vodiysining eng boy tarixga ega shaharlaridan biri, Qo'qon xonligining poytaxti bo'lgan. Shahar me'moriy durdonalari, xususan, Xudoyorxon O'rdasi saroyi va Jome masjidi bilan mashhur. U Sharqning eng muhim madaniy va adabiy markazlaridan biri bo'lgan.",
+                icon: "fa-gavel"
+            },
+            "Zarafshon": {
+                description: "Zarafshon - Qizilqum cho'lida joylashgan zamonaviy shahar, O'zbekistonning 'Oltin poytaxti'. Shahar yaqinidagi Muruntov konidan oltin qazib olinadi. Sovet davrida qurilgan bu shahar zamonaviy shaharsozlik namunasi hisoblanadi.",
+                icon: "fa-diamond"
+            }
+        };
+
+
+        // --- Mobil Menyu uchun skript ---
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+            // Ikonani o'zgartirish (burger <-> x)
+            const icon = this.querySelector('i');
+            if (menu.classList.contains('open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+        
+        // --- Shahar Detallari Modali Funksiyalari ---
+        const modalContainer = document.getElementById('city-details-modal');
+        const modalContent = modalContainer.querySelector('.modal-content');
+        const modalCityName = document.getElementById('modal-city-name');
+        const modalCityDescription = document.getElementById('modal-city-description');
+
+        function showCityDetails(cityName) {
+            const data = cityData[cityName];
+
+            if (data) {
+                modalCityName.textContent = cityName;
+                modalCityDescription.innerHTML = `
+                    <div class="flex items-center mb-3 text-xl font-semibold text-gray-800">
+                        <i class="fas ${data.icon} mr-3 text-amber-500"></i> ${cityName} haqida
+                    </div>
+                    <p>${data.description}</p>
+                    <p class="mt-4 text-sm italic text-gray-500">Bu ma'lumot sayohatni rejalashtirishda qo'shimcha qiziqish uyg'otish uchun taqdim etilgan.</p>
+                `;
+
+                // Modalni ko'rsatish animatsiyasi
+                modalContainer.classList.remove('invisible', 'opacity-0');
+                modalContainer.classList.add('visible', 'opacity-100');
+                
+                modalContent.classList.remove('scale-90', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            } else {
+                // Agar ma'lumot topilmasa, oddiy bildirishnoma chiqarish
+                showCustomMessage(`Kechirasiz, ${cityName} haqida batafsil ma'lumot hozircha mavjud emas.`, 'error');
+            }
+        }
+
+        function closeCityDetails() {
+            // Modalni yopish animatsiyasi
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-90', 'opacity-0');
+            
+            setTimeout(() => {
+                modalContainer.classList.remove('visible', 'opacity-100');
+                modalContainer.classList.add('invisible', 'opacity-0');
+            }, 300); // CSS animatsiya davriga mos kelishi kerak
+        }
+
+        // Modalni overlay bosilganda yopish
+        modalContainer.addEventListener('click', (e) => {
+            if (e.target.id === 'city-details-modal') {
+                closeCityDetails();
+            }
+        });
+        
+        // --- Bildirishnoma Funksiyalari (Custom Toasts) ---
+        let messageTimeout;
+
+        function showCustomMessage(message, type = 'success') {
+            const container = document.body;
+            let box = document.getElementById('custom-message-box');
+
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'custom-message-box';
+                box.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-xl z-[90] max-w-xs transition-all duration-300 transform translate-x-full opacity-0';
+                box.innerHTML = `<p id="custom-message-text" class="font-semibold"></p>`;
+                container.appendChild(box);
+            }
+
+            clearTimeout(messageTimeout);
+            
+            const text = document.getElementById('custom-message-text');
+            text.textContent = message;
+
+            // Stilni sozlash
+            box.classList.remove('bg-green-600', 'bg-red-600', 'bg-gray-700', 'text-white');
+            if (type === 'success') {
+                box.classList.add('bg-green-600', 'text-white');
+            } else if (type === 'error') {
+                box.classList.add('bg-red-600', 'text-white');
+            } else {
+                box.classList.add('bg-gray-700', 'text-white');
+            }
+            
+            setTimeout(() => {
+                box.classList.remove('translate-x-full', 'opacity-0');
+                box.classList.add('translate-x-0', 'opacity-100');
+            }, 50); // Kichik pauza animatsiyani ishga tushirish uchun
+
+            messageTimeout = setTimeout(() => {
+                box.classList.remove('translate-x-0', 'opacity-100');
+                box.classList.add('translate-x-full', 'opacity-0');
+            }, 7000); // 7 soniyadan keyin yopiladi
+        }
+    </script>
+</body>
+</html>

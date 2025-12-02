@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UzTravelMap - Mehmonxonalar Katalogi</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Asosiy rang o'zgaruvchilari (Kun rejimi) */
+        :root {
+            --bg-color: #f7f9fb;
+            --text-color: #1f2937;
+            --card-bg: #ffffff;
+            --primary-color: #0f766e; /* Teal-700 */
+            --accent-color: #fbbf24; /* Amber-400 */
+        }
+
+        /* Tungi Rejim (Night Mode) */
+        .night-mode {
+            --bg-color: #1f2937; /* Gray-800 */
+            --text-color: #e5e7eb; /* Gray-200 */
+            --card-bg: #374151; /* Gray-700 */
+            --primary-color: #38bdf8; /* Sky-400 */
+            --accent-color: #fca5a5; /* Red-300 */
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            transition: background-color 0.5s, color 0.5s;
+        } 
+        
+        .primary-color-text { color: var(--primary-color); } 
+        .bg-primary { background-color: var(--primary-color); }
+        .bg-card { background-color: var(--card-bg); }
+
+        /* Navigatsiya Stili */
+        .nav-link { transition: color 0.3s, background-color 0.3s; padding: 0.5rem 0.75rem; border-radius: 8px; }
+        .nav-link:hover { background-color: #e0f2f1; color: var(--primary-color); }
+        .active-link { font-weight: 700; color: var(--primary-color); }
+
+        /* Aksent Tugma Stili (Kun va Tun rejimiga moslashadi) */
+        .btn-accent {
+            background-color: var(--accent-color); 
+            color: var(--text-color);
+            font-weight: 800;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.5);
+        }
+        .btn-accent:hover {
+            background-color: var(--accent-color); /* Hover rangini biroz o'zgartirish qiyinroq, shuning uchun CSS Variable bilan moslashamiz */
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* Mehmonxona Karta Stili */
+        .hotel-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+        }
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(15, 118, 110, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hotel-modal" class="fixed inset-0 bg-black bg-opacity-70 z-[99] hidden items-center justify-center p-4">
+        <div class="bg-card rounded-xl shadow-2xl w-full max-w-2xl transform transition-all p-6 md:p-8">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modal-title" class="text-2xl font-bold primary-color-text">Mehmonxona Nomi</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-3xl">&times;</button>
+            </div>
+            <p id="modal-city" class="text-sm font-semibold mb-2"></p>
+            <div id="modal-stars" class="flex items-center mb-4"></div>
+            <p id="modal-description" class="text-gray-700 leading-relaxed mb-4"></p>
+            <p id="modal-price" class="text-xl font-bold primary-color-text"></p>
+
+            <button onclick="closeModal()" class="mt-4 w-full py-2 bg-primary text-white font-semibold rounded-lg hover:bg-teal-700 transition">Yopish</button>
+        </div>
+    </div>
+
+
+    <header class="bg-card shadow-lg rounded-b-xl px-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center py-4">
+            <h1 class="text-3xl font-extrabold primary-color-text">UzTravelMap</h1>
+            
+            <div class="space-x-4 hidden md:flex">
+                <a href="bosh_sahifa.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-house-chimney mr-1"></i> Bosh sahifa</a>
+                <a href="shaharlar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-landmark mr-1"></i> Shaharlar</a>
+                <a href="mehmonxonalar.html" class="nav-link active-link flex items-center"><i class="fas fa-bed mr-1"></i> Mehmonxonalar</a>
+                <a href="xaritalar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-globe-asia mr-1"></i> Xaritalar</a>
+                <a href="bron_qilish.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-ticket-alt mr-1"></i> Bron qilish</a>
+                <a href="aloqa.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-message mr-1"></i> Aloqa</a>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-primary-color-text text-2xl" aria-label="Mobil menyu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="flex flex-col space-y-2 py-3">
+                <a href="bosh_sahifa.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-house-chimney mr-2"></i> Bosh sahifa</a>
+                <a href="shaharlar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-landmark mr-2"></i> Shaharlar</a>
+                <a href="mehmonxonalar.html" class="nav-link active-link py-2 px-3"><i class="fas fa-bed mr-2"></i> Mehmonxonalar</a>
+                <a href="xaritalar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-globe-asia mr-2"></i> Xaritalar</a>
+                <a href="bron_qilish.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-ticket-alt mr-2"></i> Bron qilish</a>
+                <a href="aloqa.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-message mr-2"></i> Aloqa</a>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="max-w-7xl mx-auto px-4 py-10 min-h-screen">
+        
+        <h2 class="text-4xl font-extrabold text-center mb-4 primary-color-text">Mehmonxonalar Katalogi</h2>
+        <p class="text-xl text-center mb-10 text-gray-500">O'zbekiston bo'ylab 30 dan ortiq eng yaxshi turar joylar.</p>
+
+        <div class="flex flex-wrap gap-4 justify-between items-center bg-card p-4 rounded-xl shadow-md mb-8">
+            
+            <div class="flex items-center space-x-2 w-full sm:w-auto">
+                <label for="city-filter" class="font-semibold text-sm whitespace-nowrap">Shahar:</label>
+                <select id="city-filter" onchange="filterHotels()" class="p-2 border border-gray-300 rounded-lg bg-white w-full">
+                    <option value="All">Barcha shaharlar</option>
+                    <option value="Toshkent">Toshkent</option>
+                    <option value="Samarqand">Samarqand</option>
+                    <option value="Buxoro">Buxoro</option>
+                    <option value="Xiva">Xiva</option>
+                </select>
+            </div>
+
+            <div class="flex items-center space-x-2 w-full sm:w-auto">
+                <label for="sort-by" class="font-semibold text-sm whitespace-nowrap">Saralash:</label>
+                <select id="sort-by" onchange="sortHotels()" class="p-2 border border-gray-300 rounded-lg bg-white w-full">
+                    <option value="stars-desc">Reyting bo'yicha (Yuqoridan)</option>
+                    <option value="stars-asc">Reyting bo'yicha (Pastdan)</option>
+                    <option value="price-asc">Narx bo'yicha (Arzonidan)</option>
+                    <option value="price-desc">Narx bo'yicha (Qimmatidan)</option>
+                </select>
+            </div>
+
+             <button id="theme-toggle" onclick="toggleTheme()" class="w-full sm:w-auto mt-2 sm:mt-0 py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition flex items-center justify-center">
+                 <i class="fas fa-moon mr-2"></i> Tunga o'tish
+             </button>
+        </div>
+
+
+        <div id="hotel-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <p id="no-results" class="col-span-full text-center text-xl text-red-500 hidden">
+                Tanlangan filtr bo'yicha mehmonxona topilmadi.
+            </p>
+        </div>
+
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-xl font-bold mb-4 text-amber-400">UzTravelMap</h4>
+                <p class="text-gray-400 text-sm">Sayohatlaringiz uchun eng yaxshi mehmonxonalar.</p>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Tezkor Havolalar</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="bosh_sahifa.html" class="text-gray-400 hover:text-primary-color transition">Bosh sahifa</a></li>
+                    <li><a href="shaharlar.html" class="text-gray-400 hover:text-primary-color transition">Shaharlar</a></li>
+                    <li><a href="mehmonxonalar.html" class="text-gray-400 hover:text-primary-color transition">Mehmonxonalar</a></li>
+                    <a href="xaritalar.html" class="nav-link text-gray-400 hover:text-primary-color transition"><i class="fas fa-globe-asia mr-2"></i> Xaritalar</a>
+                    <li><a href="bron_qilish.html" class="text-gray-400 hover:text-primary-color transition">Bron qilish</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Aloqa</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center"><i class="fas fa-phone mr-2 text-primary-color"></i> +998 91 093 43 63</li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-primary-color"></i> info@uztravelmap.uz</li>
+                </ul>
+            </div>
+             <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Ijtimoiy Tarmoqlar</h4>
+                <div class="flex space-x-6 text-3xl">
+                    <a href="https://instagram.com/Xusinboyevv" target="_blank" aria-label="Instagram" class="transition duration-300 hover:scale-110" style="color: #E1306C;"><i class="fab fa-instagram"></i></a>
+                    <a href="https://t.me/Xusinboyevv" target="_blank" aria-label="Telegram" class="text-blue-400 transition duration-300 hover:scale-110 hover:text-blue-300"><i class="fab fa-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
+            &copy; 2024 UzTravelMap. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+    <script>
+        // Mehmonxona ma'lumotlari (30 ta mehmonxona, yangilangan rasmlar bilan)
+        const allHotels = [
+            // Toshkent (10 ta)
+            { 
+                id: 1, 
+                name: "Hyatt Regency Tashkent", 
+                city: "Toshkent", 
+                stars: 5, 
+                price: 220, 
+                description: "Markazda joylashgan hashamatli mehmonxona, biznes va dam olish uchun ideal.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/679181947.jpg?k=cb52a43cc9a3a7e07501d6dbc4404aae4f58b5a9a38232a2102e6ef051bab6dc&o=" 
+            },
+            { 
+                id: 2, 
+                name: "Hilton Tashkent City", 
+                city: "Toshkent", 
+                stars: 5, 
+                price: 200, 
+                description: "Tashkent City majmuasida, ajoyib shahar manzarasi bilan.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/490848710.jpg?k=43e8f980bec0b284ea9ad9f18b303ac0cca814e50d4352318b4700fcd6998bcb&o=" 
+            },
+            { 
+                id: 3, 
+                name: "Wyndham Tashkent", 
+                city: "Toshkent", 
+                stars: 4, 
+                price: 120, 
+                description: "Zamonaviy dizayn, metro bekatiga yaqin. Oilaviy sayohatlar uchun qulay.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/296186428.jpg?k=7425a8247b482571f163efda303f4ffbe60d747ebaeedff8cf4a3cf05c276eb3&o=" 
+            },
+            { 
+                id: 4, 
+                name: "City Palace Hotel", 
+                city: "Toshkent", 
+                stars: 4, 
+                price: 100, 
+                description: "An'anaviy O'zbek uslubidagi hashamat va shinamlik.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/176420461.jpg?k=f3e1fa7e649d691b50258d84a2b35b101e11365f393d073319d194eb8dc5c06d&o=" 
+            },
+            { 
+                id: 5, 
+                name: "Uzbekistan Hotel", 
+                city: "Toshkent", 
+                stars: 3, 
+                price: 70, 
+                description: "Klassik sovet me'morchiligi, markaziy maydonda joylashgan.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/130518921.jpg?k=e965365a3b46108313c0c0987f1ce1cdac11c2503fe0b1fa166192c8597a319d&o=" 
+            },
+            { 
+                id: 6, 
+                name: "Radisson Blu Hotel", 
+                city: "Toshkent", 
+                stars: 4, 
+                price: 130, 
+                description: "Katta yig'ilish xonalari va zamonaviy restoranlarga ega.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/532956327.jpg?k=9b84f61a5be9f321d4162da995a25d9ce1337fda5fa66376f3b39b84170c45e2&o=" 
+            },
+            { 
+                id: 7, 
+                name: "Shodlik Palace Hotel", 
+                city: "Toshkent", 
+                stars: 3, 
+                price: 65, 
+                description: "Milliy teatr va bog'larga yaqin. Arzon va qulay.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/59076703.jpg?k=85c56b9c3bf581dd450455e0cc5ff5fa4b1c0bec616889fb24a5abc4faa75f73&o="
+            },
+            { 
+                id: 8, 
+                name: "Sayyoh Hotel & Resort", 
+                city: "Toshkent", 
+                stars: 3, 
+                price: 80, 
+                description: "Shahardan chetroqda, tinch va yashil hududda dam olish uchun.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/726301335.jpg?k=e9acb3b4b3eea5e2aa2aba67dbcee12038c900e0997caa896806ea0a564d35d3&o="
+            },
+            { 
+                id: 9, 
+                name: "Grand Mir Hotel", 
+                city: "Toshkent", 
+                stars: 5, 
+                price: 180, 
+                description: "Yevropa darajasidagi xizmat va keng xonalar. Sport zali mavjud.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/32489727.jpg?k=ef98262ef2f6a25e037a55f496030606f1f67cd5ff6e514463251a85dbd32128&o="
+            },
+            { 
+                id: 10, 
+                name: "Le Grande Plaza Hotel", 
+                city: "Toshkent", 
+                stars: 4, 
+                price: 110, 
+                description: "Xalqaro anjumanlar uchun ideal joy. Kafelar yaqinida.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/11468720.jpg?k=540b923f905b8e50b213e1b1475d16ad64a7c6969aa9f38ab079d6f3c6d53c3e&o=" 
+            },
+            
+            // Samarqand (8 ta)
+            { 
+                id: 11, 
+                name: "Registon Plaza Hotel", 
+                city: "Samarqand", 
+                stars: 5, 
+                price: 150, 
+                description: "Registon maydoniga eng yaqin va eng hashamatli mehmonxonalardan biri.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max500/753177530.jpg?k=560ca52e73f0173b09cba566a04fc5906c83af7b02c767c28c83e30ba9668d18&o=" 
+            },
+            { 
+                id: 12, 
+                name: "Silk Road Palace", 
+                city: "Samarqand", 
+                stars: 4, 
+                price: 115, 
+                description: "Ipak Yo'li uslubida qurilgan, qulay va sokin mehmonxona.", 
+                img: "https://hbpro.expert/resource/hotel/photo_1200/150/61983/30406373.jpg" 
+            },
+            { 
+                id: 13, 
+                name: "Grand Samarkand Superior", 
+                city: "Samarqand", 
+                stars: 4, 
+                price: 105, 
+                description: "Ajoyib xizmat ko'rsatish va milliy taomlar menusi bilan mashhur.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/172097981.jpg?k=44c6ed975d3ed6e7813ab043bce631199236c3fecd2ba51f5d14ccf753ebc369&o=" 
+            },
+            { 
+                id: 14, 
+                name: "Afrosiyob Hotel", 
+                city: "Samarqand", 
+                stars: 3, 
+                price: 60, 
+                description: "Budjet uchun qulay, shahar markazida. Transportga yaqin.", 
+                img: "https://cdn.worldota.net/t/640x400/content/06/ae/06ae647df8d1ccbf907d24e22694762e3fb4c372.JPEG" 
+            },
+            { 
+                id: 15, 
+                name: "Malika Prime Hotel", 
+                city: "Samarqand", 
+                stars: 4, 
+                price: 90, 
+                description: "Tarixiy obidalarga piyoda borish mumkin bo'lgan qulay joylashuv.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/61080318.jpg?k=261c1bb790beb2f195c444254422918661a1559f5ce7b4ea61cc1923af6ff8aa&o=" 
+            },
+            { 
+                id: 16, 
+                name: "Orient Star Samarkand", 
+                city: "Samarqand", 
+                stars: 3, 
+                price: 75, 
+                description: "An'anaviy O'zbek g'isht terish uslubida bezatilgan.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/753177530.jpg?k=560ca52e73f0173b09cba566a04fc5906c83af7b02c767c28c83e30ba9668d18&o=" 
+            },
+            { 
+                id: 17, 
+                name: "Bibikhanum Guesthouse", 
+                city: "Samarqand", 
+                stars: 3, 
+                price: 55, 
+                description: "Kichik, oilaviy mehmonxona. Haqiqiy mehmondo'stlik muhiti.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/650470756.jpg?k=898da6acd5ea4f9ffffd5304d2f82a40472ac4fb3966693616b1755e73b5df11&o=" 
+            },
+            { 
+                id: 18, 
+                name: "Shaxzoda Palace", 
+                city: "Samarqand", 
+                stars: 5, 
+                price: 160, 
+                description: "Shinam hovli va katta yashil bog'i bor mehmonxona.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/298515000.jpg?k=78a5acdbebf2df9f5f2f30560ed37010aef08f6c97eeb138df4de10dbb994c45&o=" 
+            },
+            
+            // Buxoro (7 ta)
+            { 
+                id: 19, 
+                name: "Zargaron Plaza Hotel", 
+                city: "Buxoro", 
+                stars: 5, 
+                price: 140, 
+                description: "Eski shahar tashqarisida joylashgan, barcha qulayliklarga ega zamonaviy majmua.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/594845959.jpg?k=3ff03252c47c878ed2fdee6ecccbc6f1bf2773b1708a8a177c3d053a23c5c1ff&o=" 
+            },
+            { 
+                id: 20, 
+                name: "Lyabi Hauz Hotel", 
+                city: "Buxoro", 
+                stars: 4, 
+                price: 100, 
+                description: "Labi Hovuz majmuasiga qaragan, markaziy joylashuv. Ajoyib ko'rinish.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/493718439.jpg?k=16f7171372f10e37dbf326860fb45cf12022d5ffd9e57fc7ff5b5d23866a20e3&o=" 
+            },
+            { 
+                id: 21, 
+                name: "Minzifa Hotel", 
+                city: "Buxoro", 
+                stars: 3, 
+                price: 60, 
+                description: "Kichik, oilaviy boshqariladigan butik mehmonxona. Haqiqiy Sharq ruhi.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/10670790.jpg?k=710c153d0a3223d53fb43171f109721f836ab3f715bd4824fc1027bcc2f7d7c8&o=" 
+            },
+            { 
+                id: 22, 
+                name: "Old City Bukhara", 
+                city: "Buxoro", 
+                stars: 4, 
+                price: 95, 
+                description: "Tarixiy devorlar orasida, an'anaviy hovli va me'morchilik.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/493718439.jpg?k=16f7171372f10e37dbf326860fb45cf12022d5ffd9e57fc7ff5b5d23866a20e3&o=" // Qo'shimcha rasm
+            },
+            { 
+                id: 23, 
+                name: "Boutique Hotel Komil", 
+                city: "Buxoro", 
+                stars: 3, 
+                price: 70, 
+                description: "Qadimiy binoda joylashgan, qo'l mehnati bilan bezatilgan xonalar.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/473458193.jpg?k=b2ae71891c85038955bf8660cf7c73b7f946d0d3a4b4a9c7576b3bd642b20eeb&o=" 
+            },
+            { 
+                id: 24, 
+                name: "Diyor Hotel", 
+                city: "Buxoro", 
+                stars: 4, 
+                price: 85, 
+                description: "Qulay yotoqlar va shinam sharoitlar. Ertalabki nonushta ajoyib.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/366811634.jpg?k=551a7666c6dfdbb34fdc04dd3ccbc78dffa3b03376d861cd8e821ad4d2d0165a&o=" 
+            },
+            { 
+                id: 25, 
+                name: "Omar Khayyam Hotel", 
+                city: "Buxoro", 
+                stars: 5, 
+                price: 135, 
+                description: "Sharqona hashamat va yevropa qulayligining ajoyib uyg'unligi.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/725565488.jpg?k=b71767a6fcde3b6248f63dd1728392f236366586a428fc0b79bb3db9fe0d70ab&o=" 
+            },
+
+            // Xiva (5 ta)
+            { 
+                id: 26, 
+                name: "Orient Star Khiva", 
+                city: "Xiva", 
+                stars: 4, 
+                price: 110, 
+                description: "Madrasa binosida joylashgan noyob mehmonxona. Tarixiy atmosfera.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/149861122.jpg?k=a9938567cf2cf5b159c478f2b8021a6d7088db463c4313dcab5ccd42c88a5f02&o=" 
+            },
+            { 
+                id: 27, 
+                name: "Khiva Palace Hotel", 
+                city: "Xiva", 
+                stars: 4, 
+                price: 100, 
+                description: "Yangi va zamonaviy bino. Ichan Qal'aga yaqin joylashgan.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/739207042.jpg?k=be88131c2744979cb2f29b37406fc718c80ca4d34dcb44fbbdc64282033b2857&o=" 
+            },
+            { 
+                id: 28, 
+                name: "Farovon Hotel", 
+                city: "Xiva", 
+                stars: 3, 
+                price: 60, 
+                description: "Kichik va tinch mehmonxona. Qulay narxlar.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/380039442.jpg?k=22eaf1c7aaf3f307a4e033b7789e893f12e45e1e7e2aaf185ce134f7982ef61c&o=" 
+            },
+            { 
+                id: 29, 
+                name: "Arkanchi Hotel", 
+                city: "Xiva", 
+                stars: 3, 
+                price: 75, 
+                description: "An'anaviy Xiva uslubida, oilaviy muhit.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/135342160.jpg?k=1fa05ca6d24990b3d68c22a41f0dbd6407354771026f0208b585e06269fbb981&o=" 
+            },
+            { 
+                id: 30, 
+                name: "Islom Khodja Guesthouse", 
+                city: "Xiva", 
+                stars: 3, 
+                price: 50, 
+                description: "Islom Xo'ja minorasi yonida, kichik mehmon uy.", 
+                img: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/371540164.jpg?k=e484702f0fa0db26b36cd553ea76495f023f920d47f45367c013bdddcf4c6481&o="
+            },
+        ];
+
+        let currentHotels = [...allHotels];
+
+        // --- Yulduzlarni render qilish funksiyasi ---
+        function renderStars(count) {
+            let starsHtml = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < count) {
+                    // To'liq yulduz
+                    starsHtml += `<i class="fas fa-star text-yellow-400"></i>`;
+                } else {
+                    // Bo'sh yulduz
+                    starsHtml += `<i class="far fa-star text-gray-300"></i>`;
+                }
+            }
+            return starsHtml;
+        }
+
+        // --- Mehmonxona kartalarini render qilish ---
+        function renderHotels() {
+            const listContainer = document.getElementById('hotel-list');
+            const noResults = document.getElementById('no-results');
+            listContainer.innerHTML = '';
+
+            if (currentHotels.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            currentHotels.forEach(hotel => {
+                const card = document.createElement('div');
+                card.className = 'bg-card hotel-card shadow-lg rounded-xl overflow-hidden';
+                
+                card.innerHTML = `
+                    <img src="${hotel.img}" alt="${hotel.name}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h4 class="text-xl font-bold primary-color-text mb-1">${hotel.name}</h4>
+                        <p class="text-sm text-gray-500 mb-2">${hotel.city}</p>
+                        <div class="flex items-center space-x-1 mb-3">
+                            ${renderStars(hotel.stars)}
+                            <span class="text-sm ml-2 font-semibold">${hotel.stars} yulduz</span>
+                        </div>
+                        <p class="text-lg font-extrabold text-green-600 mb-4">$${hotel.price} <span class="text-sm font-normal text-gray-500">/ tun (o'rtacha)</span></p>
+                        
+                        <button onclick="openModal(${hotel.id})" class="w-full py-2 btn-accent rounded-lg font-semibold hover:shadow-xl transition">
+                            <i class="fas fa-info-circle mr-2"></i> Batafsil ma'lumot
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // --- 1. Shahar bo'yicha Filterlash (Qo'shimcha funksiya 1) ---
+        function filterHotels() {
+            const city = document.getElementById('city-filter').value;
+            
+            let filtered = allHotels;
+            if (city !== 'All') {
+                filtered = allHotels.filter(hotel => hotel.city === city);
+            }
+
+            currentHotels = filtered;
+            sortHotels(); // Filtrlagandan keyin darhol saralashni ham chaqiramiz
+        }
+
+        // --- 2. Reyting va Narx bo'yicha Saralash (Qo'shimcha funksiya 2) ---
+        function sortHotels() {
+            const sortBy = document.getElementById('sort-by').value;
+
+            currentHotels.sort((a, b) => {
+                if (sortBy === 'stars-desc') {
+                    return b.stars - a.stars;
+                } else if (sortBy === 'stars-asc') {
+                    return a.stars - b.stars;
+                } else if (sortBy === 'price-asc') {
+                    return a.price - b.price;
+                } else if (sortBy === 'price-desc') {
+                    return b.price - a.price;
+                }
+                return 0;
+            });
+            renderHotels();
+        }
+
+        // --- 3. Batafsil Ma'lumot Modali (Qo'shimcha funksiya 3) ---
+        function openModal(hotelId) {
+            const hotel = allHotels.find(h => h.id === hotelId);
+            if (!hotel) return;
+
+            document.getElementById('modal-title').textContent = hotel.name;
+            document.getElementById('modal-city').textContent = `Manzil: ${hotel.city}`;
+            document.getElementById('modal-description').textContent = hotel.description;
+            document.getElementById('modal-price').textContent = `Narxi: $${hotel.price} / tun`;
+            document.getElementById('modal-stars').innerHTML = renderStars(hotel.stars);
+
+            document.getElementById('hotel-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('hotel-modal').style.display = 'none';
+        }
+
+        // --- 4. Tunga o'tish/Yorug'lik rejimini almashtirish (Qo'shimcha funksiya 4) ---
+        function toggleTheme() {
+            const body = document.body;
+            const button = document.getElementById('theme-toggle');
+            
+            body.classList.toggle('night-mode');
+
+            if (body.classList.contains('night-mode')) {
+                button.innerHTML = '<i class="fas fa-sun mr-2"></i> Yorug\'likka o\'tish';
+                button.classList.remove('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
+                button.classList.add('bg-blue-800', 'text-white', 'hover:bg-blue-700'); 
+            } else {
+                button.innerHTML = '<i class="fas fa-moon mr-2"></i> Tunga o\'tish';
+                button.classList.add('bg-gray-200', 'text-gray-800', 'hover:bg-gray-300');
+                button.classList.remove('bg-blue-800', 'text-white', 'hover:bg-blue-700');
+            }
+        }
+        
+        // --- Mobil Menyu uchun skript ---
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = this.querySelector('i');
+            
+            menu.classList.toggle('hidden');
+
+            if (menu.classList.contains('hidden')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        });
+
+
+        // Sahifa yuklanganda barcha mehmonxonalarni render qilish
+        window.onload = function() {
+            // Avval saralashni chaqiramiz, u o'z navbatida renderHotelsni chaqiradi
+            sortHotels(); 
+        }
+
+    </script>
+</body>
+</html>

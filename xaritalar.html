@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'zbekiston Tarixiy Marshrutlari Xaritasi - UzTravelMap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* Asosiy ranglarni sozlash */
+        .primary-color {
+            color: #10B981; /* Teal-600 */
+        }
+        .bg-primary {
+            background-color: #10B981;
+        }
+        .btn-map {
+            background-color: #10B981;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-map:hover {
+            background-color: #059669; /* Teal-700 */
+        }
+        
+        /* Landmark Card uchun CSS */
+        .landmark-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .landmark-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Navigatsiya Uslubi (Namuna asosida yangilandi) */
+        .nav-link { 
+            transition: color 0.3s, background-color 0.3s; 
+            padding: 0.5rem 0.75rem; 
+            border-radius: 8px; 
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        .nav-link:hover { 
+            background-color: #e0f2f1; /* Yengil Teal fon */
+            color: #059669; /* To'qroq Teal matn */
+        }
+        /* Faol havolalar uchun maxsus uslub (Xaritalar) */
+        .active-link { 
+            font-weight: 700; 
+            color: #059669; /* Aktiv rangni to'qroq Teal qildim */
+            background-color: #e0f2f1;
+        }
+
+        /* Mobile Menu uchun CSS */
+        #mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #e5e7eb;
+            z-index: 10;
+        }
+        #mobile-menu.open {
+            display: block;
+        }
+        
+        /* Maxsus banner uslublari */
+        .map-title-section {
+            position: relative;
+            padding-top: 15rem; 
+            padding-bottom: 15rem; 
+            background-color: #f3f4f6; 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url('https://nova24.uz/wp-content/uploads/2023/02/16669619400.jpg');
+            color: white; 
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); 
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin-bottom: 2rem; 
+        }
+
+        .map-title-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4); 
+            z-index: 1;
+        }
+
+        .map-title-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .map-title-content h1 {
+            font-size: 3rem; 
+            font-weight: 800; 
+            margin-bottom: 0.5rem;
+        }
+
+        .map-title-content p {
+            font-size: 1.5rem; 
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <a href="bosh_sahifa.html" class="text-2xl font-bold primary-color">UzTravelMap</a>
+                </div>
+                <nav class="hidden md:flex space-x-2">
+                    <a href="bosh_sahifa.html" class="nav-link text-gray-600">
+                        <i class="fas fa-house-chimney mr-1"></i> Bosh sahifa
+                    </a>
+                    <a href="shaharlar.html" class="nav-link text-gray-600">
+                        <i class="fas fa-landmark mr-1"></i> Shaharlar
+                    </a>
+                    <a href="mehmonxonalar.html" class="nav-link text-gray-600">
+                        <i class="fas fa-bed mr-1"></i> Mehmonxonalar
+                    </a>
+                    <a href="xaritalar.html" class="nav-link active-link">
+                        <i class="fas fa-globe-asia mr-1"></i> Xaritalar
+                    </a>
+                    <a href="bron_qilish.html" class="nav-link text-gray-600">
+                        <i class="fas fa-ticket-alt mr-1"></i> Bron qilish
+                    </a>
+                    <a href="aloqa.html" class="nav-link text-gray-600">
+                        <i class="fas fa-message mr-1"></i> Aloqa
+                    </a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-primary-color focus:outline-none p-2 rounded-md">
+                        <i class="fas fa-bars fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav id="mobile-menu" class="md:hidden p-4 space-y-2">
+            <a href="bosh_sahifa.html" class="nav-link text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+                <i class="fas fa-house-chimney mr-2"></i> Bosh sahifa
+            </a>
+            <a href="shaharlar.html" class="nav-link text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+                <i class="fas fa-landmark mr-2"></i> Shaharlar
+            </a>
+            <a href="mehmonxonalar.html" class="nav-link text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+                <i class="fas fa-bed mr-2"></i> Mehmonxonalar
+            </a>
+            <a href="xaritalar.html" class="nav-link active-link p-2 rounded-md">
+                <i class="fas fa-globe-asia mr-2"></i> Xaritalar
+            </a>
+            <a href="bron_qilish.html" class="nav-link text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+                <i class="fas fa-ticket-alt mr-2"></i> Bron qilish
+            </a>
+            <a href="aloqa.html" class="nav-link text-gray-700 hover:bg-gray-100 p-2 rounded-md">
+                <i class="fas fa-message mr-2"></i> Aloqa
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="map-title-section">
+            <div class="max-w-7xl mx-auto px-4 map-title-content">
+                <h1>O'zbekiston Tarixiy Marshrutlari Xaritasi</h1>
+                <p>Sizni Buyuk Ipak Yo'li bo'ylab eng muhim madaniy obidalar kutmoqda.</p>
+            </div>
+        </div>
+
+        <section class="py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-8 flex items-center">
+                    <i class="fas fa-landmark mr-3 primary-color"></i> Tarixiy Yodgorliklar Ro'yxati
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Nurata Tog'lari Qo'riqxonasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Jizzax/Navoiy viloyatlari</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Noyob flora va faunaga ega ekoturizm zonasi. Qadimiy qal'a xarobalari va tog' manzaralari.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Bahor/Kuz** (Yurish uchun qulay harorat)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **Kun bo'yi yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Tog'li yo'l**, maxsus kiyim talab etiladi.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Nurata+Tog'lari+O'zbekiston" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Chor Minor Madrasasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Buxoro</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">O'zining to'rtta koshinli minorasi bilan mashhur. Shaharning chekkasida, go'zal ko'rinishga ega.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Fotosurat vaqti** (minoralar surati uchun)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~45 daqiqa yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Eski shahar tashqarisida**, taksi kerak.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Chor+Minor+Buxoro" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Chorsu Bozori</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Markaziy Osiyodagi eng qadimiy va eng yirik bozor. Yashil gumbaz ostida savdo qaynaydi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Dam olish kunlari ertalab** (Eng faol vaqt)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~2.5 soat yurish** (xaridlar bilan)</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Metro orqali oson**, Eski shahar qismi.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Chorsu+Bozori+Toshkent" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Farg'ona vodiysi Madaniy Markazlari</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Farg'ona, Qo'qon, Marg'ilon</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Hunarmandchilik, ayniqsa ipakchilik (Marg'ilon) va Qo'qon xonligi saroyining boy tarixi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Bahor/Yoz** (Ipak ishlab chiqarish jarayoni)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **3 kunlik sayohat**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Avtomobil yoki poyezd**, shaharlar orasida sayohat.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Farg'ona+vodiysi+madaniyati" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Termiz Arxeologik Majmuasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Surxondaryo viloyati</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">O'rta Osiyodagi buddizm madaniyati izlari. Fayoztepa va Qoratepa kabi qadimiy manzilgohlar.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Qishda** (Hudud issiq bo'ladi)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~4 soat yurish** (muzey va obidalar)</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Janubiy hudud**, Termiz shahridan taksi.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Termiz+Arxeologik+Majmuasi" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Sitorai Mohi Xosa Saroyi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Buxoro</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Buxoro amirining yozgi qarorgohi. Sharqiy va Yevropa uslublari aralashgan noyob me'morchilik.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunning o'rtasi** (ichki dizaynni ko'rish)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~2 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Shahardan 4 km uzoqlikda**, transport kerak.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Sitorai+Mohi+Xosa+Saroyi+Buxoro" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Jome Masjidi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Xiva</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">213 ta o'yilgan yog'och ustunlari bilan mashhur. Soddaligi bilan ajralib turadi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Yozning issiq kuni** (ichkarisi salqin)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Ichan Qal'a markazida**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Jome+Masjidi+Xiva" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Afrosiyob Qadimgi Shahri</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Samarqand</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Qadimiy Samarqandning xarobalari, miloddan avvalgi VIII asrga borib taqaladi. Muzey bilan birga.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Ertalab** (issiq bo'lmasligi uchun)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~2.5 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Ochiq maydon**, Shohi Zinda yaqinida.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Afrosiyob+Qadimgi+Shahri+Samarqand" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Zangi Ota Majmuasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent viloyati</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Buyuk so'fiy Zangi Ota qabri joylashgan majmua. Katta masjid va minoralari bor.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Juma kunidan tashqari** (Ibodat vaqti) </p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1.5 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Toshkentdan 20 km uzoqlikda**, taksi.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Zangi+Ota+Majmuasi" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Abdulazizxon Madrasasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Buxoro</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Ulug' madrasa, Ulug'bek madrasasiga qarama-qarshi joylashgan. Murakkab bezaklari bilan mashhur.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunning yorug' vaqti** (Bezaklarni ko'rish)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Poytaxtning eski qismi**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Abdulazizxon+Madrasasi+Buxoro" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Qo'qon Xudoyorxon Saroyi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Qo'qon</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Qo'qon xonining so'nggi qarorgohi. Rangli koshinlar va hashamatli xonalari bilan mashhur.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunning yorug' vaqti** (Saroy fasadlari)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~2 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Shaharning markaziy qismi**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Qo'qon+Xudoyorxon+Saroyi" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Said Alauddin Maqbarasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Xiva</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Qadimiy Xivaning eng qiziqarli yodgorliklaridan biri. Mo'tabar ziyoratgoh.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Ertalab** (Tinchlikni his qilish)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~45 daqiqa yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Ichan Qal'a ichida**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Said+Alauddin+Maqbarasi+Xiva" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Shoxruxiyya Minorasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Islom madaniyatining Toshkentdagi qadimiy yodgorliklaridan biri.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunning o'rtasi**</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~30 daqiqa yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Eski shahar hududida**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Shoxruxiyya+Minorasi+Toshkent" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Mirzo Ulug'bek Madrasasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Buxoro</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Ulug'bek tomonidan qurilgan uchta madrasadan biri. Buxoroning markazida joylashgan.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Tushdan keyin** (soya tomoni salqin)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Piyodalar zonasi**, oson.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Mirzo+Ulug'bek+Madrasasi+Buxoro" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Tilpak Furushon Savdo Toqi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Buxoro</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">O'rta asrlardagi savdo gumbazlaridan biri. Hozirda ham hunarmandchilik do'konlari joylashgan.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Savdo vaqti** (10:00-17:00)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~45 daqiqa yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Qadimiy bozorlar markazida**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Tilpak+Furushon+Toqi+Buxoro" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Vobkent Minorasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Vobkent (Buxoro vil.)</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Buxoro yaqinidagi XII asrga oid alohida turgan minora. Qadimgi karvon yo'lining muhim belgisi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunduzi**</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~45 daqiqa yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Buxorodan tashqarida** (40 daq. yo'l).</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Vobkent+Minorasi" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Xo'ja G'ijduvoniy Maqbarasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">G'ijduvon (Buxoro vil.)</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Naqshbandiya tariqatining yetti piri ziyoratgohlaridan biri.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Ertalab** (Ziyorat vaqti)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Buxoro-Samarqand yo'lida**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Xo'ja+G'ijduvoniy+Maqbarasi" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Chorvoq Suv Ombori</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent viloyati</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">O'zbekistonning "Moviy ko'li". Dam olish, suzish va tog' manzaralari uchun ideal joy.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Yozning issiq kunlari**</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **Kun bo'yi yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Tog'li yo'l**, avtomobil transporti kerak.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Chorvoq+Suv+Ombori" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Shayxontohur Majmuasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">XV-XIX asrlarga oid qabrlar va madrasalar. Toshkentning eng qadimiy qismi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunduzi**</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1.5 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Markaziy, Eski shahar qismi**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Shayxontohur+Majmuasi+Toshkent" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Aydarko'l Ko'li</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Navoiy viloyati (Cho'l)</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Qizilqum cho'li o'rtasidagi ulkan ko'l. Yurtalar lageri va sahro hayvonlarini ko'rish mumkin.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kechqurun/Tongda** (Eng yaxshi manzara)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **1-2 kunlik sayohat**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Uzoq cho'l yo'llari**, maxsus transport kerak.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Aydarko'l+Ko'li" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Mug'tepa Qal'asi (Jizzax)</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Jizzax</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Jizzax shahrining qadimiy qismi, tepalikda joylashgan qal'a xarobalari.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kuz** (Yurish uchun qulay ob-havo)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Tepalikda joylashgan**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Mug'tepa+qal'asi+Jizzax" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+                    
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Amir Temur Davlat Muzeyi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Amir Temur va Temuriylar sulolasining tarixi va madaniyatiga bag'ishlangan zamonaviy muzey.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Ish kunlari** (Maktab sayohatlari kamroq)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~2 soat yurish** (ekspozitsiyalar)</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Markaziy, oson transport**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Amir+Temur+Muzeyi+Toshkent" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Oq Saroy Qoldiqlari</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Shahrisabz</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Amir Temurning yozgi qarorgohi qoldiqlari. Peshtoqining ulkanligi hayratga soladi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunning yorug' vaqti** (Peshtoqni suratga olish)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Shaharning markaziy qismi**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Oq+Saroy+Shahrisabz" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Hazrati Imom Maqbarasi</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Shahrisabz</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Amir Temurning Shahrisabzdagi memorial majmuasining bir qismi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Tinch va xotirjam vaqt**</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Yangi rekonstruksiya qilingan hudud**.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Hazrati+Imom+Maqbarasi+Shahrisabz" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Chor-Bakr Nekropoli</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Buxoro</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Abu Bakr avlodlari dafn etilgan ulkan memorial majmua. "O'liklar shahri" nomi bilan ham mashhur.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Kunning yorug' vaqti** (maydon katta)</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~2 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Shahardan 5 km uzoqlikda**, transport kerak.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Chor-Bakr+Buxoro" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+
+                    <div class="bg-white shadow-xl rounded-lg p-6 landmark-card">
+                        <h4 class="text-2xl font-bold primary-color mb-3">Sudlik Qal'asi (Chirchiq)</h4>
+                        <span class="text-sm font-medium text-amber-500 bg-amber-100 px-2 py-1 rounded-full">Toshkent viloyati</span>
+                        <p class="text-gray-600 mt-3 mb-4 text-sm">Toshkent yaqinidagi qadimiy qal'a xarobalari. Mintaqaning qadimgi tarixidan guvohlik beradi.</p>
+                        <div class="space-y-2 text-gray-700 text-sm border-t pt-3">
+                            <p class="flex items-center"><i class="fas fa-clock mr-2 text-amber-500"></i> Tavsiya: **Ertalabki sayohat**</p>
+                            <p class="flex items-center"><i class="fas fa-shoe-prints mr-2 text-amber-500"></i> Ko'rish vaqti: **~1.5 soat yurish**</p>
+                            <p class="flex items-center"><i class="fas fa-road mr-2 text-amber-500"></i> Marshrut: **Qiyinroq yerlar**, eng yaxshisi gid bilan.</p>
+                        </div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Sudlik+Qal'asi+Toshkent" target="_blank" class="mt-4 w-full inline-flex items-center justify-center btn-map px-4 py-2 rounded-lg font-medium hover:bg-teal-700 transition">
+                            <i class="fab fa-google mr-2"></i> Xaritada Ko'rish va Marshrut
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+
+        <section class="py-16 bg-white shadow-inner">
+            <div class="max-w-7xl mx-auto px-4">
+                <h3 class="text-3xl font-extrabold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-route mr-3 primary-color"></i> Sayohat Marshrutlaringizni Rejalashtirish Markazi
+                </h3>
+                <p class="text-gray-600 mb-6">
+                    Sayohatni rejalashtirishda joylashuvlarni aniq ko'rish va eng qulay marshrutni aniqlash muhim.
+                    Quyidagi xaritadan foydalanib, o'zingizning ideal sayohat rejangizni tuzing yoki to'liq sayohat taklifini so'rang!
+                </p>
+
+                <div class="bg-gray-100 rounded-lg overflow-hidden border-2 border-primary-color shadow-2xl">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3106180.14441221!2d63.0298157!3d41.32185595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38b209e0a0d0d82d%3A0x74e5033c4892c57a!2sO%C2%BBzbekiston!5e0!3m2!1suz!2s!4v1703080000000!5m2!1suz!2s" 
+                        width="100%" 
+                        height="600" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        class="w-full h-full"
+                        title="O'zbekiston Sayyohlik Xaritasi"
+                    ></iframe>
+                </div>
+                <div class="text-center mt-6">
+                    <a href="bron_qilish.html" class="inline-block py-3 px-8 text-lg font-bold btn-map rounded-lg hover:opacity-90 transition duration-300">
+                        <i class="fas fa-calendar-alt mr-2"></i> Mehmonxonani Bron Qilish
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <footer class="bg-gray-800 text-white py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            <div>
+                <h4 class="text-xl font-bold mb-4 text-amber-400">UzTravelMap</h4>
+                <p class="text-gray-400 text-sm">O'zbekistonda unutilmas sayohatlar yaratishga qaratilgan birinchi raqamli platforma.</p>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Tezkor Havolalar</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html" class="text-gray-400 hover:text-primary-color transition">Bosh sahifa</a></li>
+                    <li><a href="shaharlar.html" class="text-gray-400 hover:text-primary-color transition">Shaharlar</a></li>
+                    <li><a href="mehmoxonalar.html" class="text-gray-400 hover:text-primary-color transition">Mehmonxonalar</a></li>
+                    <li><a href="xaritalar.html" class="text-primary-color font-bold transition">Xaritalar</a></li>
+                    <li><a href="bron_qilish.html" class="text-gray-400 hover:text-primary-color transition">Bron qilish</a></li>
+                    <li><a href="aloqa.html" class="text-gray-400 hover:text-primary-color transition">Aloqa</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Aloqa</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center"><i class="fas fa-phone mr-2 text-primary-color"></i> <span class="font-mono">+998 91 093 43 63</span></li>
+                    <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-primary-color"></i> Xorazm viloyati, Xiva tumani.</li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-primary-color"></i> info@uztravelmap.uz</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Ijtimoiy Tarmoqlar</h4>
+                <div class="flex space-x-6 text-3xl">
+                    <a href="https://instagram.com/Xusinboyevv" target="_blank" aria-label="Instagram"
+                        class="transition duration-300 hover:scale-110" style="color: #E1306C;">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    
+                    <a href="https://t.me/Xusinboyevv" target="_blank" aria-label="Telegram"
+                        class="text-blue-400 transition duration-300 hover:scale-110 hover:text-blue-300">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    
+                    <a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="text-gray-400 text-xs mt-3">@Xusinboyevv</p>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
+            © 2024 UzTravelMap. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+    <script>
+        // --- Mobil Menyu uchun skript ---
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+            // Ikonani o'zgartirish (burger <-> x)
+            const icon = this.querySelector('i');
+            if (menu.classList.contains('open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    </script>
+</body>
+</html>

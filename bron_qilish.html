@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UztravelMap | Bron Qilish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <style>
+        /* Umumiy fon va shrift */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* Ochiq moviy fon */
+            min-height: 100vh;
+        }
+        /* Asosiy konteyner uchun soya */
+        .booking-card {
+            box-shadow: 0 10px 25px rgba(0, 50, 100, 0.1);
+        }
+        /* Teal rangdagi asosiy tugma stili */
+        .btn-primary {
+            background-color: #14b8a6; /* Teal-500 */
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0d9488; /* Teal-600 */
+        }
+        /* Inputlar uchun fokus stili */
+        input:focus, select:focus {
+            border-color: #0d9488; /* Teal-600 */
+            box-shadow: 0 0 0 1px #0d9488;
+        }
+
+        /* Qo'shimcha CSS: Navigatsiya havolalarini ikonka uchun tekislash */
+        .nav-link-item {
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* Matnni bir qatorda ushlab turish */
+        }
+        .nav-link-item i {
+            margin-right: 0.4rem;
+        }
+
+        /* Yangi bron rangini aniqlash */
+        .bg-booking-green {
+            background-color: #059669; /* Emerald-600 */
+        }
+        .hover\:bg-booking-green:hover {
+            background-color: #047857; /* Emerald-700 */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white shadow-lg sticky top-0 z-50 border-b border-blue-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="bosh_sahifa.html" class="flex-shrink-0 text-2xl font-bold text-blue-600 flex items-center">
+                    <i class="fas fa-globe-asia mr-2 text-2xl"></i> UztravelMap
+                </a>
+                
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
+                    <a href="bosh_sahifa.html" class="nav-link-item text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                        <i class="fas fa-home"></i>Bosh sahifa
+                    </a>
+                    <a href="shaharlar.html" class="nav-link-item text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                        <i class="fas fa-city"></i>Shaharlar
+                    </a>
+                    <a href="mehmonxonalar.html" class="nav-link-item text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                        <i class="fas fa-hotel"></i>Mehmonxonalar
+                    </a>
+                    <a href="xaritalar.html" class="nav-link-item text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                        <i class="fas fa-map-marked-alt"></i>Xaritalar
+                    </a>
+                    <a href="bron_qilish.html" class="nav-link-item bg-booking-green text-white px-3 py-2 rounded-md text-sm font-medium shadow-md hover:bg-booking-green">
+                        <i class="fas fa-bookmark"></i>Bron qilish
+                    </a>
+                    <a href="aloqa.html" class="nav-link-item text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                        <i class="fas fa-headset"></i>Aloqa
+                    </a>
+                </div>
+
+                <div class="sm:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hidden sm:hidden bg-white border-t border-blue-100" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="bosh_sahifa.html" class="nav-link-item block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-home"></i>Bosh sahifa
+                </a>
+                <a href="shaharlar.html" class="nav-link-item block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-city"></i>Shaharlar
+                </a>
+                <a href="mehmoxonlar.html" class="nav-link-item block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-hotel"></i>Mehmonxonalar
+                </a>
+                <a href="xaritalar.html" class="nav-link-item block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-map-marked-alt"></i>Xaritalar
+                </a>
+                <a href="bron_qilish.html" class="nav-link-item bg-booking-green text-white px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-bookmark"></i>Bron qilish
+                </a>
+                <a href="aloqa.html" class="nav-link-item block text-gray-700 hover:bg-blue-50 hover:text-blue-700 px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-headset"></i>Aloqa
+                </a>
+            </div>
+        </div>
+    </header>
+    <div class="flex items-center justify-center p-4">
+        <div class="booking-card w-full max-w-2xl bg-white p-8 md:p-10 rounded-xl">
+            <h1 class="text-3xl font-extrabold text-teal-700 mb-6 text-center">Mehmonxonani Bron Qilish</h1>
+            <p class="text-center text-gray-500 mb-8">Kerakli ma'lumotlarni to'ldiring va bronni tasdiqlang.</p>
+
+            <form id="bookingForm" onsubmit="event.preventDefault(); submitBooking();">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="roomType" class="block text-sm font-medium text-gray-700 mb-1">Xona Turi</label>
+                        <select id="roomType" name="roomType" onchange="updatePrice()"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none text-gray-700">
+                            <option value="Standart" data-price="150000">Standart (150,000 UZS/kecha)</option>
+                            <option value="Deluxe" data-price="280000">Deluxe (280,000 UZS/kecha)</option>
+                            <option value="Suite" data-price="450000">Lux (450,000 UZS/kecha)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="numGuests" class="block text-sm font-medium text-gray-700 mb-1">Mehmonlar Soni</label>
+                        <input type="number" id="numGuests" name="numGuests" min="1" max="10" value="1" required onchange="updatePrice()"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none text-gray-700">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="checkInDate" class="block text-sm font-medium text-gray-700 mb-1">Kirish Sanasi</label>
+                        <input type="date" id="checkInDate" name="checkInDate" required onchange="calculateNights(); updatePrice();"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none text-gray-700">
+                    </div>
+                    <div>
+                        <label for="checkOutDate" class="block text-sm font-medium text-gray-700 mb-1">Chiqish Sanasi</label>
+                        <input type="date" id="checkOutDate" name="checkOutDate" required onchange="calculateNights(); updatePrice();"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none text-gray-700">
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Shaxsiy Ma'lumotlar</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">To'liq Ism (Familiya, Ism)</label>
+                        <input type="text" id="fullName" name="fullName" required placeholder="Xusinboyev Xusinboy"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none text-gray-700">
+                    </div>
+                    <div>
+                        <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Telefon Raqam</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" required pattern="[0-9]{9}" title="9 xonali raqam (Masalan: 910934363)" placeholder="910934363"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none text-gray-700">
+                    </div>
+                </div>
+
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Hisob-kitob</h2>
+                <div class="space-y-3 mb-6 p-4 bg-teal-50 rounded-lg border border-teal-200">
+                    <div class="flex justify-between text-gray-600">
+                        <span class="font-medium">Jami Kechalar Soni:</span>
+                        <span id="nightsCount" class="font-bold text-teal-700">0 kecha</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span class="font-medium">Xona Narxi (Kecha uchun):</span>
+                        <span id="roomPrice" class="font-bold text-teal-700">0 UZS</span>
+                    </div>
+                    <div class="flex justify-between pt-2 border-t border-teal-300">
+                        <span class="text-lg font-bold text-gray-800">Umumiy Narx:</span>
+                        <span id="totalPrice" class="text-lg font-extrabold text-teal-900">0 UZS</span>
+                    </div>
+                </div>
+
+                <div id="statusMessage" class="hidden p-3 mb-4 rounded-lg text-sm font-medium" role="alert"></div>
+
+                <button type="submit" id="submitButton"
+                    class="btn-primary w-full text-white font-bold py-3 rounded-xl hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-teal-500 focus:ring-opacity-50 disabled:opacity-50">
+                    Bron Qilishni Tasdiqlash
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        // Placeholderlar: Iltimos, o'zingizning haqiqiy qiymatlaringiz bilan almashtiring!
+        const BOT_TOKEN = "8238722775:AAH0f9jnZJK0-9zNTDrRf7XIESsmQB1Epz4"; 
+        const CHAT_ID = "5419351971"; 
+
+        // Mobil menyu uchun JavaScript
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // ------------------------------------------
+        // FUNKSIYA 1: Sanalar orasidagi farqni hisoblash (Kechalar soni)
+        // ------------------------------------------
+        function calculateNights() {
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+            const nightsCountElement = document.getElementById('nightsCount');
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (checkInDate && checkOutDate) {
+                const date1 = new Date(checkInDate);
+                const date2 = new Date(checkOutDate);
+
+                if (date2 <= date1) {
+                    nightsCountElement.textContent = '0 kecha';
+                    statusMessage.className = 'p-3 mb-4 rounded-lg text-sm font-medium bg-red-100 text-red-800';
+                    statusMessage.textContent = "Chiqish sanasi Kirish sanasidan keyin bo'lishi kerak.";
+                    statusMessage.style.display = 'block';
+                    document.getElementById('checkOutDate').value = '';
+                    return 0;
+                } else {
+                    statusMessage.style.display = 'none';
+                    const diffTime = Math.abs(date2 - date1);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    nightsCountElement.textContent = `${diffDays} kecha`;
+                    return diffDays;
+                }
+            }
+            nightsCountElement.textContent = '0 kecha';
+            return 0;
+        }
+
+
+        // ------------------------------------------
+        // FUNKSIYA 2: Umumiy narxni hisoblash
+        // ------------------------------------------
+        function updatePrice() {
+            const numNights = calculateNights();
+            const roomSelect = document.getElementById('roomType');
+            const numGuests = parseInt(document.getElementById('numGuests').value, 10) || 1;
+            
+            const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+            // Xona narxini data-price atributidan olish
+            const pricePerNight = parseInt(selectedOption.getAttribute('data-price'), 10) || 0;
+            
+            // Xona narxini formatlab ko'rsatish
+            document.getElementById('roomPrice').textContent = `${pricePerNight.toLocaleString('uz-UZ')} UZS`;
+
+            // Umumiy narxni hisoblash: (Narx * Kecha)
+            // Diqqat: Mehmonlar soni narxga ta'sir qilmasligi uchun faqat Kecha soni bilan ko'paytirildi.
+            const totalPriceValue = pricePerNight * numNights; 
+
+            // Umumiy narxni formatlab ko'rsatish
+            document.getElementById('totalPrice').textContent = `${totalPriceValue.toLocaleString('uz-UZ')} UZS`;
+            
+            return totalPriceValue;
+        }
+
+        // Sahifa yuklanganda sanalarni bugundan keyingi kun qilib sozlash
+        window.onload = function() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const dateString = (date) => date.toISOString().split('T')[0];
+
+            document.getElementById('checkInDate').min = dateString(today);
+            document.getElementById('checkInDate').value = dateString(today);
+            document.getElementById('checkOutDate').min = dateString(tomorrow);
+            document.getElementById('checkOutDate').value = dateString(tomorrow);
+
+            // Boshlang'ich narxni hisoblash
+            calculateNights();
+            updatePrice();
+        };
+
+        // ------------------------------------------
+        // FUNKSIYA 3: Formani Tekshirish (Client-side validation)
+        // ------------------------------------------
+        function validateForm() {
+            const form = document.getElementById('bookingForm');
+            // Brauzerning standart validatsiyasini chaqirish (required, pattern)
+            if (!form.checkValidity()) {
+                document.getElementById('submitButton').click(); 
+                return false;
+            }
+            // Maxsus validatsiya (kechalar soni)
+            if (calculateNights() <= 0) {
+                 return false;
+            }
+            return true;
+        }
+        
+        // ------------------------------------------
+        // FUNKSIYA 4: Bronni Tasdiqlash va Telegramga Yuborish
+        // ------------------------------------------
+        async function submitBooking() {
+            if (!validateForm()) {
+                return; // Agar validatsiya o'tmasa, to'xtatish
+            }
+
+            const button = document.getElementById('submitButton');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            // Statusni ko'rsatish
+            button.disabled = true;
+            button.textContent = 'Yuborilmoqda...';
+            statusMessage.style.display = 'block';
+            statusMessage.className = 'p-3 mb-4 rounded-lg text-sm font-medium bg-blue-100 text-blue-800';
+            statusMessage.textContent = 'Bron ma\'lumotlari yuborilmoqda, iltimos kuting...';
+
+
+            const formData = new FormData(document.getElementById('bookingForm'));
+            const data = Object.fromEntries(formData.entries());
+            
+            const total = document.getElementById('totalPrice').textContent;
+            const nights = document.getElementById('nightsCount').textContent;
+
+            // Xabarning matnini tayyorlash (Telegramga yuboriladigan chek qog'ozi)
+            const message = `
+*Yangi Bron Qilish Tasdig'i (UZTravelMap Bot Orqali)*
+
+*Mehmonxona Ma'lumotlari:*
+Xona Turi: \`${data.roomType}\`
+Mehmonlar Soni: \`${data.numGuests}\`
+Kirish Sanasi: \`${data.checkInDate}\`
+Chiqish Sanasi: \`${data.checkOutDate}\`
+Jami Kechalar: \`${nights}\`
+
+*Mijoz Ma'lumotlari:*
+To'liq Ism: \`${data.fullName}\`
+Telefon Raqam: \`+998${data.phoneNumber}\`
+
+*HISOB-KITOB:*
+Umumiy Narx: *${total}*
+            `;
+
+            const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            // Telegramga yuborish logikasi
+            try {
+                const response = await fetch(telegramApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown' 
+                    })
+                });
+
+                if (response.ok) {
+                    statusMessage.className = 'p-3 mb-4 rounded-lg text-sm font-medium bg-green-100 text-green-800';
+                    statusMessage.textContent = '✅ Bron muvaffaqiyatli tasdiqlandi! Chek qog\'ozi sizning botingizga yuborildi.';
+                    document.getElementById('bookingForm').reset(); 
+                    updatePrice(); 
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(`Telegram API xatosi: ${errorData.description || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Yuborishda xato yuz berdi:', error);
+                statusMessage.className = 'p-3 mb-4 rounded-lg text-sm font-medium bg-red-100 text-red-800';
+                statusMessage.textContent = `❌ Bronni yuborishda xato: ${error.message}. Iltimos, Bot Token va Chat ID to'g'riligini tekshiring.`;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Bron Qilishni Tasdiqlash';
+                
+            }
+        }
+    </script>
+</body>
+</html>

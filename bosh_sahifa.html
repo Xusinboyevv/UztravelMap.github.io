@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UzTravelMap - O'zbekistonga Sayohatlar</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f7f9fb; 
+        } 
+        /* Rang o'zgarishlari */
+        .primary-color { color: #0f766e; } 
+        .bg-primary { background-color: #0f766e; }
+        .accent-color { background-color: #fbbf24; } 
+
+        /* Navigatsiya Stili */
+        .nav-link { transition: color 0.3s, background-color 0.3s; padding: 0.5rem 0.75rem; border-radius: 8px; }
+        .nav-link:hover { background-color: #e0f2f1; color: #0f766e; }
+        .active-link { font-weight: 700; color: #0f766e; }
+
+        /* Hero Qismi uchun fon */
+        .hero-section {
+            background-image: url('https://cf.youtravel.me/tr:w-1500/upload/tours/28630/media/51e/2vl3yv8a2veomu28frkpit3hlz2kc463.jpg'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            height: 60vh; 
+        }
+
+        /* Aksent Tugma Stili */
+        .btn-accent {
+            background-color: #fbbf24; 
+            color: #1f2937;
+            font-weight: 800;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(251, 191, 36, 0.5);
+        }
+        .btn-accent:hover {
+            background-color: #f59e0b;
+            box-shadow: 0 8px 15px rgba(245, 158, 11, 0.6);
+            transform: translateY(-1px);
+        }
+        
+        /* Mobil menyu animatsiyasi */
+        #mobile-menu {
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+            max-height: 0;
+        }
+        #mobile-menu.open {
+            max-height: 500px; 
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white shadow-lg rounded-b-xl px-4 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center py-4">
+            <h1 class="text-3xl font-extrabold primary-color">UzTravelMap</h1>
+            
+            <div class="space-x-4 hidden md:flex">
+                <a href="bosh_sahifa.html" class="nav-link active-link flex items-center"><i class="fas fa-house-chimney mr-1"></i> Bosh sahifa</a>
+                <a href="shaharlar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-landmark mr-1"></i> Shaharlar</a>
+                <a href="mehmonxonalar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-bed mr-1"></i> Mehmonxonalar</a>
+                <a href="xaritalar.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-globe-asia mr-1"></i> Xaritalar</a>
+                <a href="bron_qilish.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-ticket-alt mr-1"></i> Bron qilish</a>
+                <a href="aloqa.html" class="nav-link text-gray-600 flex items-center"><i class="fas fa-message mr-1"></i> Aloqa</a>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-primary-color text-2xl" aria-label="Mobil menyu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden">
+            <div class="flex flex-col space-y-2 py-3">
+                <a href="bosh_sahifa.html" class="nav-link active-link py-2 px-3"><i class="fas fa-house-chimney mr-2"></i> Bosh sahifa</a>
+                <a href="shaharlar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-landmark mr-2"></i> Shaharlar</a>
+                <a href="mehmonxonalar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-bed mr-2"></i> Mehmonxonalar</a>
+                <a href="xaritalar.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-globe-asia mr-2"></i> Xaritalar</a>
+                <a href="bron_qilish.html" class="nav-link text-gray-600 py-2 px-3"><i class="fas fa-ticket-alt mr-2"></i> Bron qilish</a>
+                <a href="aloqa.html" class=" nav-link text-gray-600 py-2 px-3"><i class="fas fa-message mr-2"></i> Aloqa</a>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="min-h-screen">
+        
+        <section id="bosh-sahifa" class="hero-section text-white py-20 sm:py-32 relative flex items-center justify-center">
+            <div class="relative z-10 text-center">
+                <h2 class="text-5xl font-extrabold mb-4">O'zbekistonning Sirli Dunyosini Kashf eting</h2>
+           
+                <a href="xaritalar.html" class="inline-block py-3 px-8 bg-amber-500 text-gray-900 font-bold rounded-full hover:bg-amber-400 transition duration-300 shadow-lg">
+                    Sayohatni boshlash <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+            <div class="absolute inset-0 bg-black opacity-40"></div> </section>
+
+        <section id="afzalliklar" class="py-16 md:py-24 max-w-7xl mx-auto px-4">
+            <h3 class="text-4xl font-extrabold text-gray-800 text-center mb-4">Nima uchun UzTravelMap</h3>
+            <p class="text-xl text-gray-500 text-center mb-12">Bizning noyob xizmatlarimizni kashf eting.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300">
+                    <div class="text-5xl primary-color mb-4">
+                        <i class="fas fa-clock-rotate-left"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 text-gray-800">Tarixiy Yo'nalishlar</h4>
+                    <p class="text-gray-500 text-sm">Samarqand, Buxoro, Xiva - eng qadimiy obidalarga sayohatlar.</p>
+                </div>
+
+                <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300">
+                    <div class="text-5xl primary-color mb-4">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 text-gray-800">Eng Yaxshi Narxlar</h4>
+                    <p class="text-gray-500 text-sm">Mehmonxona va aviakompaniyalar bilan to'g'ridan-to'g'ri hamkorlik.</p>
+                </div>
+
+                <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300">
+                    <div class="text-5xl primary-color mb-4">
+                        <i class="fas fa-people-group"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 text-gray-800">24/7 Yordam</h4>
+                    <p class="text-gray-500 text-sm">Sayohat davomida doimiy qo'llab-quvvatlash va gidlarning xizmati.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="manzillar-index" class="bg-gray-100 py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4">
+                <h3 class="text-4xl font-extrabold text-gray-800 text-center mb-4">Mashhur Sayohat Manzillari</h3>
+                <p class="text-xl text-gray-500 text-center mb-12">Eng ko'p bron qilingan yo'nalishlarimiz.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                        <img src="https://ik.imagekit.io/tvlk/blog/2023/09/Registan-Samarkand.jpg?tr=q-70,c-at_max,w-500,h-300,dpr-2" onerror="this.onerror=null;this.src='https://placehold.co/400x300/0f766e/ffffff?text=Registon';" alt="Registon Maydoni" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="text-xl font-bold primary-color mb-1">Registon, Samarqand</h4>
+                            <p class="text-gray-500 text-sm">Tarixiy joylashuv</p>
+                            <a href="shaharlar.html" class="mt-3 inline-block text-amber-500 font-semibold hover:text-amber-600 transition">
+                                Ko'proq ko'rish <i class="fas fa-arrow-right text-xs ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                        <img src="https://static.tildacdn.com/tild3530-3435-4537-b065-356131623038/122d82f4-709e-11ed-8.jpeg" onerror="this.onerror=null;this.src='https://placehold.co/400x300/fbbf24/1f2937?text=Poi+Kalon';" alt="Poi Kalon Minorasi" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="text-xl font-bold primary-color mb-1">Poyi Kalon, Buxoro</h4>
+                            <p class="text-gray-500 text-sm">Me'moriy mo'jiza</p>
+                            <a href="shaharlar.html" class="mt-3 inline-block text-amber-500 font-semibold hover:text-amber-600 transition">
+                                Ko'proq ko'rish <i class="fas fa-arrow-right text-xs ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                        <img src="https://avatars.mds.yandex.net/i?id=8e2ae4821e97ec3a727c9c08aa6840e3_l-5249239-images-thumbs&ref=rim&n=13&w=1200&h=800" onerror="this.onerror=null;this.src='https://placehold.co/400x300/0f766e/ffffff?text=Ichan+Qal%27a';" alt="Ichan Qal'a" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="text-xl font-bold primary-color mb-1">Ichan Qal'a, Xiva</h4>
+                            <p class="text-gray-500 text-sm">Ochiq osmon ostidagi muzey</p>
+                            <a href="shaharlar.html" class="mt-3 inline-block text-amber-500 font-semibold hover:text-amber-600 transition">
+                                Ko'proq ko'rish <i class="fas fa-arrow-right text-xs ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                        <img src="https://dwc.kg/wp-content/uploads/2023/07/tashkentskaya-telebashnya-optimized.jpg" onerror="this.onerror=null;this.src='https://placehold.co/400x300/fbbf24/1f2937?text=Toshkent+Minora';" alt="Toshkent Minorasi" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h4 class="text-xl font-bold primary-color mb-1">Toshkent Minorasi</h4>
+                            <p class="text-gray-500 text-sm">Zamonaviy diqqatga sazovor joy</p>
+                            <a href="shaharlar.html" class="mt-3 inline-block text-amber-500 font-semibold hover:text-amber-600 transition">
+                                Ko'proq ko'rish <i class="fas fa-arrow-right text-xs ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="bron-qilish-index" class="bg-primary py-16 mt-10">
+            <div class="max-w-4xl mx-auto px-4 text-center text-white">
+                <h3 class="text-4xl font-extrabold mb-4">Sayohatni bron qilishga tayyormisiz?</h3>
+                <p class="text-xl font-light mb-8">O'zbekistonning mo'jizalarini o'zingiz kashf eting. Bizning yordamimiz bilan sayohat rejangizni tuzing.</p>
+                <a href="bron_qilish.html" class="inline-block py-4 px-10 btn-accent rounded-xl text-lg hover:shadow-xl transition duration-300">
+                    <i class="fas fa-calendar-alt mr-2"></i> Ekskursiyani Bron Qilish
+                </a>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer id="aloqa-index" class="bg-gray-800 text-white py-10 mt-10">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+            <div>
+                <h4 class="text-xl font-bold mb-4 text-amber-400">UzTravelMap</h4>
+                <p class="text-gray-400 text-sm">O'zbekistonda unutilmas sayohatlar yaratishga qaratilgan birinchi raqamli platforma.</p>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Tezkor Havolalar</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="shaharlar.html" class="text-gray-400 hover:text-primary-color transition">Shaharlar</a></li>
+                    <li><a href="mehmonxonalar.html" class="text-gray-400 hover:text-primary-color transition">Mehmonxonalar</a></li>
+                    <li><a href="bron_qilish.html" class="text-gray-400 hover:text-primary-color transition">Bron qilish</a></li>
+                    <li><a href="aloqa.html" class="text-gray-400 hover:text-primary-color transition">Aloqa</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Aloqa</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center"><i class="fas fa-phone mr-2 text-primary-color"></i> <span class="font-mono">+998 91 093 43 63</span></li>
+                    <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-primary-color"></i> Xorazm viloyati, Xiva tumani.</li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-primary-color"></i> info@uztravelmap.uz</li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-white">Ijtimoiy Tarmoqlar</h4>
+                <div class="flex space-x-6 text-3xl">
+                    <a href="https://instagram.com/Xusinboyevv" target="_blank" aria-label="Instagram"
+                       class="transition duration-300 hover:scale-110" style="color: #E1306C;">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    
+                    <a href="https://t.me/Xusinboyevv" target="_blank" aria-label="Telegram"
+                       class="text-blue-400 transition duration-300 hover:scale-110 hover:text-blue-300">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    
+                    <a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-amber-400 transition"><i class="fab fa-youtube"></i></a>
+                </div>
+                <p class="text-gray-400 text-xs mt-3">@Xusinboyevv</p>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-500">
+            &copy; 2024 UzTravelMap. Barcha huquqlar himoyalangan.
+        </div>
+    </footer>
+
+    <script>
+        // Ranglar va uslublar barcha sahifalar uchun
+        // Faqat menyu animatsiyasi skripti
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+            // Ikonani o'zgartirish (burger <-> x)
+            const icon = this.querySelector('i');
+            if (menu.classList.contains('open')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Bosh sahifada (uztravelmap_index.html) ichki scrollni ta'minlash
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Faqat shu sahifadagi # havolalariga ta'sir qiladi
+                if (this.href.includes('uztravelmap_index.html') || this.href.split('#').length === 2 && this.href.split('#')[0] === window.location.href.split('#')[0]) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        // Mobil menyuni yopish
+                        if (document.getElementById('mobile-menu').classList.contains('open')) {
+                            document.getElementById('mobile-menu-btn').click(); 
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
